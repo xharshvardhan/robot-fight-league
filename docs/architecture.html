@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fighter Brain</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--fg:#1c1b19;--mut:#6a665e;--line:#d9d4c8;--red:#c8372d;--blue:#2f62c9;--amb:#a86a00;--grn:#2c7d4f;--soft:#efece4;--redsoft:#fbe6e3;--bluesoft:#e3ebfb;--ambsoft:#fbf0d9;--grnsoft:#e1f2e8}
+@media(prefers-color-scheme:dark){:root{--bg:#151412;--card:#1f1e1b;--fg:#ece9e2;--mut:#a09b90;--line:#3a3832;--red:#ef6a5f;--blue:#7ea4f2;--amb:#e0a440;--grn:#6cc493;--soft:#2a2925;--redsoft:#3a211e;--bluesoft:#1f2a42;--ambsoft:#3a2f18;--grnsoft:#1c3327;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,"Segoe UI",sans-serif}
+main{max-width:1060px;margin:auto;padding:36px max(16px,env(safe-area-inset-right)) 90px max(16px,env(safe-area-inset-left))}
+h1{font-size:32px;letter-spacing:-.02em;margin:0 0 6px}
+h2{font-size:22px;margin:52px 0 8px;padding-top:22px;border-top:2px solid var(--fg);text-wrap:balance}
+p{margin:6px 0 10px;max-width:72ch}.lede{font-size:17px;color:var(--mut)}
+.answer{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--red);border-radius:10px;padding:16px 20px;margin:22px 0}
+.answer p{margin:4px 0}
+.fig{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:16px 0;overflow-x:auto}
+.fig svg{display:block;min-width:820px;width:100%;height:auto}
+.cap{color:var(--mut);font-size:14px;margin:-6px 0 0}
+svg text{font:14px -apple-system,"Segoe UI",sans-serif;fill:var(--fg)}
+svg .s{font-size:12px;fill:var(--mut)}svg .b{font-weight:700}svg .big{font-size:20px;font-weight:700}
+svg .box{fill:var(--soft);stroke:var(--line)}svg .r{fill:var(--redsoft);stroke:var(--red)}svg .bl{fill:var(--bluesoft);stroke:var(--blue)}
+svg .a{fill:var(--ambsoft);stroke:var(--amb)}svg .g{fill:var(--grnsoft);stroke:var(--grn)}
+svg .ln{stroke:var(--mut);stroke-width:1.6;fill:none}svg .dash{stroke-dasharray:6 5}
+svg .hd{fill:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw{overflow-x:auto}
+ul{max-width:72ch;padding-left:20px}li{margin:4px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:14px 0}
+.grid div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.grid b{display:block;margin-bottom:4px}
+</style></head><body><main>
+
+<h1>Fighter Brain</h1>
+<p class="lede">What the networks in the fight league are, how they are wired and how they were made. State as of 13 Nov 2026.</p>
+
+<div class="answer">
+<p><b>Short answer.</b> Each fighter is run by a small, plain neural network: numbers go in one side, pass through three layers, and joint commands come out the other. It is the simplest kind there is (a "multilayer perceptron").</p>
+<p><b>It is not a two-tower model.</b> There is a second network during training, the "critic", which is where the two-network impression comes from. It only helps training and is thrown away for the fight.</p>
+<p><b>Size:</b> about 233,000 adjustable numbers. A phone photo filter is bigger. It runs 50 times a second.</p>
+</div>
+
+<h2>1. What a neural network is here</h2>
+<p>A function with a lot of dials. It takes a list of numbers describing the robot's situation and returns a list of numbers saying where each joint should move next. Training turns the dials until the outputs earn good scores. Nothing is written by hand about how to punch or balance.</p>
+
+<h2>2. The fighter network (red corner)</h2>
+<div class="fig"><svg viewBox="0 0 1000 500" role="img" aria-label="Inputs flow through three layers to 29 joint targets">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="hd"/></marker></defs>
+<text x="10" y="22" class="b">What it is told (126 numbers)</text>
+<g>
+<rect class="box" x="10" y="36" width="270" height="86" rx="8"/><text x="22" y="58" class="b">Body sense · 93</text><text x="22" y="78" class="s">spin 3 · tilt 3 · joint angles 29</text><text x="22" y="96" class="s">joint speeds 29 · its own last command 29</text><text x="22" y="114" class="s">(no camera, no position in the room)</text>
+<rect class="box" x="10" y="130" width="270" height="50" rx="8"/><text x="22" y="151" class="b">Walking order · 5</text><text x="22" y="170" class="s">speed forward, sideways, turn · step rhythm 2</text>
+<rect class="box" x="10" y="188" width="270" height="50" rx="8"/><text x="22" y="209" class="b">Body condition · 7</text><text x="22" y="228" class="s">strength · 5 limb-group injuries · stamina</text>
+<rect class="a" x="10" y="246" width="270" height="50" rx="8"/><text x="22" y="267" class="b">Skill switch · 4</text><text x="22" y="286" class="s">walk / strike / defend / get up (one is on)</text>
+<rect class="r" x="10" y="304" width="270" height="68" rx="8"/><text x="22" y="325" class="b">Strike order · 10</text><text x="22" y="344" class="s">where the target is 3 · which way to hit it 3</text><text x="22" y="362" class="s">which fist 2 · target live 1 · time left 1</text>
+<rect class="bl" x="10" y="380" width="270" height="50" rx="8"/><text x="22" y="401" class="b">Incoming threat · 7</text><text x="22" y="420" class="s">nearest opposing fist: position 3 · speed 3 · live 1</text>
+</g>
+<path class="ln" d="M280 79H330V240" /><path class="ln" d="M280 155H330"/><path class="ln" d="M280 213H330"/><path class="ln" d="M280 271H330"/><path class="ln" d="M280 338H330V240"/><path class="ln" d="M280 405H330V330"/>
+<path class="ln" d="M330 240H372" marker-end="url(#ar)"/>
+<text x="380" y="22" class="b">The network</text>
+<rect class="g" x="380" y="60" width="90" height="360" rx="10"/><text x="425" y="232" text-anchor="middle" class="big">512</text><text x="425" y="254" text-anchor="middle" class="s">units</text>
+<path class="ln" d="M470 240H502" marker-end="url(#ar)"/>
+<rect class="g" x="510" y="130" width="90" height="220" rx="10"/><text x="555" y="232" text-anchor="middle" class="big">256</text><text x="555" y="254" text-anchor="middle" class="s">units</text>
+<path class="ln" d="M600 240H632" marker-end="url(#ar)"/>
+<rect class="g" x="640" y="180" width="90" height="120" rx="10"/><text x="685" y="232" text-anchor="middle" class="big">128</text><text x="685" y="254" text-anchor="middle" class="s">units</text>
+<path class="ln" d="M730 240H762" marker-end="url(#ar)"/>
+<text x="425" y="446" text-anchor="middle" class="s">layer 1</text><text x="555" y="446" text-anchor="middle" class="s">layer 2</text><text x="685" y="446" text-anchor="middle" class="s">layer 3</text>
+<text x="555" y="468" text-anchor="middle" class="s">every unit in a layer is connected to every unit in the next</text>
+<text x="770" y="22" class="b">What it says</text>
+<rect class="r" x="770" y="196" width="100" height="88" rx="10"/><text x="820" y="232" text-anchor="middle" class="big">29</text><text x="820" y="252" text-anchor="middle" class="s">joint targets</text><text x="820" y="270" text-anchor="middle" class="s">(one per joint)</text>
+<path class="ln" d="M870 240H902" marker-end="url(#ar)"/>
+<rect class="box" x="908" y="196" width="84" height="88" rx="10"/><text x="950" y="232" text-anchor="middle" class="b">Motors</text><text x="950" y="252" text-anchor="middle" class="s">pull each joint</text><text x="950" y="270" text-anchor="middle" class="s">to its target</text>
+<path class="ln dash" d="M950 284V488H145V432" marker-end="url(#ar)"/><text x="560" y="482" text-anchor="middle" class="s">the body moves, the readings change, and the loop repeats 50 times a second</text>
+</svg></div>
+<p class="cap">The amber, red and blue inputs are what make it a fighter. The rest is the same body sense every walking robot network uses.</p>
+
+<div class="grid">
+<div><b>No memory.</b> It decides from the present instant only, plus its own last command. It does not remember what the opponent did a second ago.</div>
+<div><b>No eyes.</b> It never sees an image. The opponent exists only as "target point" and "nearest incoming fist", both worked out for it by the simulator.</div>
+<div><b>No plan.</b> It does not choose when to strike or defend. A hand-written rule sets the skill switch (next section).</div>
+</div>
+
+<h2>3. Red corner and blue corner are built differently</h2>
+<div class="fig"><svg viewBox="0 0 1000 380" role="img" aria-label="Red uses one network with a skill switch, blue picks one of three networks">
+<text x="10" y="24" class="b">The rule (same for both)</text>
+<rect class="a" x="10" y="36" width="230" height="300" rx="10"/>
+<text x="24" y="66" class="b">Checked every 1/50 s:</text>
+<text x="24" y="100">1. Am I down?</text><text x="40" y="120" class="s">→ get up</text>
+<text x="24" y="156">2. Is a fist closing fast</text><text x="24" y="176">   within 0.9 m?</text><text x="40" y="196" class="s">→ defend</text>
+<text x="24" y="232">3. Otherwise</text><text x="40" y="252" class="s">→ strike</text>
+<text x="24" y="296" class="s">Hand-written. Not learned.</text><text x="24" y="314" class="s">Walking is never chosen yet.</text>
+
+<text x="300" y="24" class="b" style="fill:var(--red)">RED: one network does every skill</text>
+<path class="ln" d="M240 110H292" marker-end="url(#ar)"/>
+<rect class="a" x="300" y="80" width="150" height="60" rx="8"/><text x="375" y="106" text-anchor="middle" class="b">Skill switch</text><text x="375" y="125" text-anchor="middle" class="s">4 of its 126 inputs</text>
+<path class="ln" d="M450 110H492" marker-end="url(#ar)"/>
+<rect class="r" x="500" y="60" width="250" height="100" rx="10"/><text x="625" y="100" text-anchor="middle" class="big">Fighter network</text><text x="625" y="124" text-anchor="middle" class="s">126 → 512 → 256 → 128 → 29</text><text x="625" y="142" text-anchor="middle" class="s">233,000 dials</text>
+<path class="ln" d="M750 110H832" marker-end="url(#ar)"/>
+<rect class="box" x="840" y="80" width="150" height="60" rx="8"/><text x="915" y="106" text-anchor="middle" class="b">Red's 29 joints</text><text x="915" y="125" text-anchor="middle" class="s">kit G1 body</text>
+
+<text x="300" y="204" class="b" style="fill:var(--blue)">BLUE: three separate networks, one used at a time</text>
+<path class="ln" d="M240 280H270V236H292" marker-end="url(#ar)"/><path class="ln" d="M270 280H292" marker-end="url(#ar)"/><path class="ln" d="M270 280V324H292" marker-end="url(#ar)"/>
+<rect class="bl" x="300" y="216" width="330" height="40" rx="8"/><text x="314" y="241" class="b">Strike specialist</text><text x="620" y="241" text-anchor="end" class="s">103 → 512 → 256 → 128 → 29</text>
+<rect class="bl" x="300" y="260" width="330" height="40" rx="8"/><text x="314" y="285" class="b">Defence specialist</text><text x="620" y="285" text-anchor="end" class="s">100 → 512 → 256 → 128 → 29</text>
+<rect class="bl" x="300" y="304" width="330" height="40" rx="8"/><text x="314" y="329" class="b">Get-up specialist</text><text x="620" y="329" text-anchor="end" class="s">93 → 512 → 256 → 128 → 29</text>
+<path class="ln" d="M630 236H700V280"/><path class="ln" d="M630 280H700"/><path class="ln" d="M630 324H700V280"/>
+<rect class="box" x="700" y="258" width="92" height="44" rx="8"/><text x="746" y="278" text-anchor="middle" class="s">only the chosen</text><text x="746" y="294" text-anchor="middle" class="s">one's output</text>
+<path class="ln" d="M792 280H832" marker-end="url(#ar)"/>
+<rect class="box" x="840" y="250" width="150" height="60" rx="8"/><text x="915" y="276" text-anchor="middle" class="b">Blue's 29 joints</text><text x="915" y="295" text-anchor="middle" class="s">standard G1 body</text>
+</svg></div>
+<p class="cap">Red is the fighter we are developing. Blue is a fixed sparring partner made from the specialists and does not learn.</p>
+
+<h2>4. Where the "second network" comes from: actor and critic</h2>
+<p>During training every fighter has two networks side by side. This is the standard recipe (called PPO), not something special to this project.</p>
+<div class="fig"><svg viewBox="0 0 1000 300" role="img" aria-label="Actor decides, critic judges; only the actor is kept">
+<rect class="r" x="20" y="40" width="440" height="200" rx="12"/>
+<text x="40" y="72" class="big">Actor: decides what to do</text>
+<text x="40" y="102">In: 126 numbers the real robot could sense</text>
+<text x="40" y="126">Out: 29 joint targets</text>
+<text x="40" y="150">Shape: 126 → 512 → 256 → 128 → 29</text>
+<text x="40" y="184" class="b" style="fill:var(--red)">This is the fighter. It is the only part used in a fight.</text>
+<text x="40" y="216" class="s">In training its output is jittered a little at random, so it</text><text x="40" y="232" class="s">tries variations and finds out which score better.</text>
+<rect class="box" x="540" y="40" width="440" height="200" rx="12"/>
+<text x="560" y="72" class="big">Critic: judges how it's going</text>
+<text x="560" y="102">In: 143 numbers, including things the robot can't sense:</text>
+<text x="560" y="122" class="s">true speed, foot contacts and forces, height off the floor</text>
+<text x="560" y="150">Out: 1 number, "points I expect from here on"</text>
+<text x="560" y="174">Shape: 143 → 512 → 256 → 128 → 1</text>
+<text x="560" y="208" class="b">Training aid only. Thrown away afterwards.</text>
+<path class="ln" d="M540 140H468" marker-end="url(#ar)"/>
+<text x="500" y="270" text-anchor="middle" class="s">The critic's estimate tells the actor whether a try went better or worse than expected. That gap is what turns the dials.</text>
+</svg></div>
+<p class="cap">The two do not share any layers and do not talk to each other in a fight, which is why this is not a two-tower model.</p>
+
+<h2>5. How red's network was made</h2>
+<div class="fig"><svg viewBox="0 0 1000 350" role="img" aria-label="Four gyms make four specialists, copied into one network, then sparring">
+<text x="10" y="22" class="b">Step 1: a gym per skill</text><text x="330" y="22" class="b">Step 2: copy into one</text><text x="640" y="22" class="b">Step 3: spar</text>
+<g>
+<rect class="box" x="10" y="36" width="250" height="44" rx="8"/><text x="22" y="63" class="b">Walking</text><text x="250" y="63" text-anchor="end" class="s">follow a speed order</text>
+<rect class="box" x="10" y="88" width="250" height="44" rx="8"/><text x="22" y="115" class="b">Striking</text><text x="250" y="115" text-anchor="end" class="s">hit a pad hard with a fist</text>
+<rect class="box" x="10" y="140" width="250" height="44" rx="8"/><text x="22" y="167" class="b">Defence</text><text x="250" y="167" text-anchor="end" class="s">don't get hit by a ball</text>
+<rect class="box" x="10" y="192" width="250" height="44" rx="8"/><text x="22" y="219" class="b">Get-up</text><text x="250" y="219" text-anchor="end" class="s">stand up from the floor</text>
+<rect class="box" x="10" y="262" width="250" height="44" rx="8" stroke-dasharray="6 5"/><text x="22" y="289" class="b">Kicking (new)</text><text x="250" y="289" text-anchor="end" class="s">hit a pad with a foot or shin</text>
+</g>
+<path class="ln" d="M260 58H300V136"/><path class="ln" d="M260 110H300"/><path class="ln" d="M260 162H300"/><path class="ln" d="M260 214H300V136"/><path class="ln" d="M300 136H322" marker-end="url(#ar)"/>
+<rect class="g" x="330" y="76" width="250" height="120" rx="10"/><text x="455" y="106" text-anchor="middle" class="b">Copying</text>
+<text x="455" y="128" text-anchor="middle" class="s">A fresh network practises all four tasks</text><text x="455" y="146" text-anchor="middle" class="s">and is corrected toward what the right</text><text x="455" y="164" text-anchor="middle" class="s">specialist would have done each instant.</text><text x="455" y="184" text-anchor="middle" class="s">500 rounds. No rewards involved.</text>
+<path class="ln" d="M580 136H632" marker-end="url(#ar)"/>
+<rect class="r" x="640" y="76" width="340" height="120" rx="10"/><text x="810" y="106" text-anchor="middle" class="b">Sparring against blue</text>
+<text x="810" y="128" text-anchor="middle" class="s">Now it learns by score: head 3, body 2, legs 1,</text><text x="810" y="146" text-anchor="middle" class="s">scaled by force. Loses points for being hit,</text><text x="810" y="164" text-anchor="middle" class="s">going down and clinching. 1,500 rounds done.</text><text x="810" y="184" text-anchor="middle" class="s">Result: about 80 points a minute to blue's 35.</text>
+<path class="ln dash" d="M260 284H455V204" marker-end="url(#ar)"/><text x="470" y="278" class="s">Not copied in yet. The kick network exists (81% of kicks land,</text><text x="470" y="296" class="s">about 1,000 N) but red cannot kick until this step is redone</text><text x="470" y="314" class="s">with five skills and the skill switch grows from 4 to 5.</text>
+</svg></div>
+
+<h2>6. Every network we have</h2>
+<div class="tw"><table>
+<tr><th>Network</th><th>Job</th><th>Shape (in → layers → out)</th><th>Used in fights</th></tr>
+<tr><td><b>Fighter</b> (red)</td><td>All four skills, picked by the skill switch</td><td class="n">126 → 512 → 256 → 128 → 29</td><td>Yes, red corner</td></tr>
+<tr><td>Strike specialist</td><td>Punch a target point</td><td class="n">103 → 512 → 256 → 128 → 29</td><td>Yes, blue corner</td></tr>
+<tr><td>Defence specialist</td><td>Avoid or block an incoming object</td><td class="n">100 → 512 → 256 → 128 → 29</td><td>Yes, blue corner</td></tr>
+<tr><td>Get-up specialist</td><td>Stand up from lying</td><td class="n">93 → 512 → 256 → 128 → 29</td><td>Yes, blue corner</td></tr>
+<tr><td>Walking body</td><td>Follow a speed and turn order</td><td class="n">105 → 512 → 256 → 128 → 29</td><td>Only as a source for the fighter</td></tr>
+<tr><td>Kick specialist</td><td>Kick a target point</td><td class="n">103 → 512 → 256 → 128 → 29</td><td>Not yet</td></tr>
+<tr><td>Critics</td><td>One per network above, training only</td><td class="n">about 110 to 143 → 512 → 256 → 128 → 1</td><td>No</td></tr>
+</table></div>
+<p class="cap">All use the same building block. The only difference between them is which extra inputs they get and what they were scored on.</p>
+
+<h2>7. What this design can't do yet</h2>
+<ul>
+<li><b>Choose its own tactics.</b> The rule decides strike, defend or get up. A fighter that picks for itself needs the switch removed or a small "coach" network on top.</li>
+<li><b>Aim by itself.</b> The strike target is handed to it (a point between the opponent's belly and head). It does not decide where to hit.</li>
+<li><b>React to patterns.</b> With no memory it cannot notice that the opponent always leads with the left.</li>
+<li><b>Walk during a fight.</b> The walking skill is in the network but the rule never selects it; footwork currently comes from the strike skill stepping toward its target.</li>
+</ul>
+
+</main></body></html>

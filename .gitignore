@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+logs/
+*.pt
+*.mp4
+.DS_Store

@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "general_motion_retargeting"
+version = "0.2.0"
+description = "General Motion Retargeting (GMR) for Humanoid Robots"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Yanjie Ze", email = "lastyanjieze@gmail.com" },
+]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "loop_rate_limiters",
+    "mink",
+    "mujoco",
+    "numpy",
+    "scipy",
+    "torch",
+    "qpsolvers[proxqp]",
+    "rich",
+    "tqdm",
+    "opencv-python",
+    "natsort",
+    "psutil",
+    "smplx @ git+https://github.com/vchoutas/smplx",
+    "protobuf",
+    "redis[hiredis]",
+    "imageio[ffmpeg]",
+]
+
+[project.urls]
+Repository = "https://github.com/YanjieZe/GMR"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "ruff>=0.16.1",
+]
+
+[tool.ruff]
+extend-exclude = [
+    # Vendored code keeps its upstream formatting.
+    "general_motion_retargeting/optitrack_vendor",
+    "general_motion_retargeting/utils/lafan_vendor",
+    "general_motion_retargeting/utils/xsens_vendor",
+    "third_party",
+]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+# Pre-existing findings excluded from the mechanical reformat; to be fixed
+# separately: unused locals (F841), bare except (E722), star import (F403).
+ignore = ["E722", "F403", "F841"]
+
+[tool.ruff.lint.per-file-ignores]
+# The package root re-exports its public API.
+"general_motion_retargeting/__init__.py" = ["F401"]
+
+[tool.setuptools.packages.find]
+include = ["general_motion_retargeting*"]
+
+[tool.setuptools.package-data]
+general_motion_retargeting = ["ik_configs/*.json"]

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fight Gym Plan</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--fg:#1c1b19;--mut:#6a665e;--line:#d9d4c8;--red:#c8372d;--blue:#2f62c9;--amb:#a86a00;--grn:#2c7d4f;--soft:#efece4;--redsoft:#fbe6e3;--bluesoft:#e3ebfb;--ambsoft:#fbf0d9;--grnsoft:#e1f2e8}
+@media(prefers-color-scheme:dark){:root{--bg:#151412;--card:#1f1e1b;--fg:#ece9e2;--mut:#a09b90;--line:#3a3832;--red:#ef6a5f;--blue:#7ea4f2;--amb:#e0a440;--grn:#6cc493;--soft:#2a2925;--redsoft:#3a211e;--bluesoft:#1f2a42;--ambsoft:#3a2f18;--grnsoft:#1c3327;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,"Segoe UI",sans-serif}
+main{max-width:1060px;margin:auto;padding:36px max(16px,env(safe-area-inset-right)) 90px max(16px,env(safe-area-inset-left))}
+h1{font-size:32px;letter-spacing:-.02em;margin:0 0 6px}
+h2{font-size:22px;margin:52px 0 8px;padding-top:22px;border-top:2px solid var(--fg);text-wrap:balance}
+p{margin:6px 0 10px;max-width:72ch}.lede{font-size:17px;color:var(--mut)}
+.answer{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--red);border-radius:10px;padding:16px 20px;margin:22px 0}
+.answer p{margin:4px 0}
+.fig{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:16px 0;overflow-x:auto}
+.fig svg{display:block;min-width:820px;width:100%;height:auto}
+.cap{color:var(--mut);font-size:14px;margin:-6px 0 0}
+svg text{font:14px -apple-system,"Segoe UI",sans-serif;fill:var(--fg)}
+svg .s{font-size:12px;fill:var(--mut)}svg .b{font-weight:700}svg .big{font-size:20px;font-weight:700}
+svg .box{fill:var(--soft);stroke:var(--line)}svg .r{fill:var(--redsoft);stroke:var(--red)}svg .bl{fill:var(--bluesoft);stroke:var(--blue)}
+svg .a{fill:var(--ambsoft);stroke:var(--amb)}svg .g{fill:var(--grnsoft);stroke:var(--grn)}
+svg .ln{stroke:var(--mut);stroke-width:1.6;fill:none}svg .dash{stroke-dasharray:6 5}
+svg .hd{fill:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw{overflow-x:auto}
+ul{max-width:72ch;padding-left:20px}li{margin:4px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:14px 0}
+.grid div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.grid b{display:block;margin-bottom:4px}
+</style></head><body><main>
+<h1>Fight Gym Plan</h1>
+<p class="lede">Why the fights look unstable and reactive, and a different way to train that fixes the causes. Proposal for review, 13 Nov 2026. Nothing here is built yet.</p>
+
+<div class="answer">
+<p><b>Your diagnosis is right, and the causes can be named.</b> The fighter was taught to hit one target, right now, any way it can. Nothing in its training rewards being balanced after the hit or setting up the next one.</p>
+<p><b>Proposal:</b> stop stitching separate skills together with a rule. Train one fighter in one gym where it sees several targets at once, chooses its own limb and order, and is scored on the whole exchange. Your multi-target idea is the first stage of it.</p>
+</div>
+
+<h2>1. Why they look the way they do</h2>
+<div class="tw"><table>
+<tr><th>What you saw</th><th>Cause in the current setup</th><th>Evidence</th></tr>
+<tr><td>Half the time saving themselves from falling</td><td>A rule flips the fighter between "strike" and "defend" up to 50 times a second. Each skill has its own stance, and the network never practised switching.</td><td>With the defend switch off, red fell 5 times less (0.2 against 1.0 a minute) and punched 60% harder (158 N against 96 N).</td></tr>
+<tr><td>Hits one target any way possible, then the next</td><td>The strike gym shows one pad with a 1.5 second timer. Points come from that hit alone. Balance afterwards earns nothing unless it actually falls.</td><td>The copied striker falls 3.5 times a minute even with no opponent.</td></tr>
+<tr><td>No planning, purely reactive</td><td>Three separate things: it sees one target only; it has no memory; and training only values about the next 2 seconds (a setting called the discount).</td><td>By design: 126 inputs, none about the future or the past.</td></tr>
+<tr><td>Wrong stance</td><td>Nothing describes a fighting stance. The only posture rewards are "fists near the chest" and "stay upright".</td><td>Reward list of the strike and sparring gyms.</td></tr>
+<tr><td>Punches when a kick would be better</td><td>Copying makes the fighter imitate whichever specialist the rule picked. It never gets to compare a punch with a kick on the same target.</td><td>Kick specialist hits about 1,000 N, striker about 540 N, yet the rule would always choose the fist.</td></tr>
+<tr><td>Walking looks poor</td><td>The walking skill is never used in a fight. Movement is whatever the strike skill does to reach its target.</td><td>The rule only ever selects strike, defend or get up.</td></tr>
+</table></div>
+
+<h2>2. Current design against the proposed one</h2>
+<div class="fig"><svg viewBox="0 0 1000 430" role="img" aria-label="Current: rule plus switch plus one target. Proposed: all targets visible, fighter chooses">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="hd"/></marker></defs>
+<text x="10" y="24" class="b">NOW</text>
+<rect class="a" x="10" y="38" width="200" height="130" rx="10"/><text x="110" y="64" text-anchor="middle" class="b">Hand-written rule</text><text x="110" y="88" text-anchor="middle" class="s">picks the skill</text><text x="110" y="106" text-anchor="middle" class="s">picks the one target</text><text x="110" y="124" text-anchor="middle" class="s">picks which fist</text><text x="110" y="148" text-anchor="middle" class="s">changes its mind 50×/s</text>
+<path class="ln" d="M210 103H252" marker-end="url(#ar)"/>
+<rect class="box" x="260" y="38" width="250" height="130" rx="10"/><text x="385" y="64" text-anchor="middle" class="b">Fighter network</text><text x="385" y="90" text-anchor="middle" class="s">sees: its body, a skill switch,</text><text x="385" y="108" text-anchor="middle" class="s">ONE target, ONE incoming fist</text><text x="385" y="132" text-anchor="middle" class="s">no memory</text><text x="385" y="150" text-anchor="middle" class="s">four copied skills inside</text>
+<path class="ln" d="M510 103H552" marker-end="url(#ar)"/>
+<rect class="box" x="560" y="38" width="200" height="130" rx="10"/><text x="660" y="64" text-anchor="middle" class="b">Scored on</text><text x="660" y="90" text-anchor="middle" class="s">this one hit, soon</text><text x="660" y="108" text-anchor="middle" class="s">looks about 2 s ahead</text><text x="660" y="132" text-anchor="middle" class="s">stance: not scored</text>
+<rect class="r" x="790" y="38" width="200" height="130" rx="10"/><text x="890" y="64" text-anchor="middle" class="b">Result</text><text x="890" y="90" text-anchor="middle" class="s">lunges at a target,</text><text x="890" y="108" text-anchor="middle" class="s">catches itself,</text><text x="890" y="126" text-anchor="middle" class="s">gets switched mid-move,</text><text x="890" y="144" text-anchor="middle" class="s">catches itself again</text>
+
+<text x="10" y="232" class="b" style="fill:var(--grn)">PROPOSED</text>
+<rect class="g" x="10" y="246" width="200" height="150" rx="10"/><text x="110" y="272" text-anchor="middle" class="b">No rule, no switch</text><text x="110" y="298" text-anchor="middle" class="s">the fighter sees every</text><text x="110" y="316" text-anchor="middle" class="s">target at once: head,</text><text x="110" y="334" text-anchor="middle" class="s">body, legs, each with</text><text x="110" y="352" text-anchor="middle" class="s">its point value, plus the</text><text x="110" y="370" text-anchor="middle" class="s">opponent's fists and feet</text>
+<path class="ln" d="M210 321H252" marker-end="url(#ar)"/>
+<rect class="g" x="260" y="246" width="250" height="150" rx="10"/><text x="385" y="272" text-anchor="middle" class="b">Fighter network</text><text x="385" y="298" text-anchor="middle" class="s">chooses target, limb and timing</text><text x="385" y="316" text-anchor="middle" class="s">punch or kick, whichever scores</text><text x="385" y="340" text-anchor="middle" class="s">short memory of the last second</text><text x="385" y="364" text-anchor="middle" class="s">starts from today's network,</text><text x="385" y="382" text-anchor="middle" class="s">so nothing learned is thrown away</text>
+<path class="ln" d="M510 321H552" marker-end="url(#ar)"/>
+<rect class="g" x="560" y="246" width="200" height="150" rx="10"/><text x="660" y="272" text-anchor="middle" class="b">Scored on</text><text x="660" y="298" text-anchor="middle" class="s">the whole exchange</text><text x="660" y="316" text-anchor="middle" class="s">looks 6 to 10 s ahead</text><text x="660" y="340" text-anchor="middle" class="s">stance scored all the time:</text><text x="660" y="358" text-anchor="middle" class="s">feet apart, weight centred,</text><text x="660" y="376" text-anchor="middle" class="s">guard up, facing the target</text>
+<rect class="box" x="790" y="246" width="200" height="150" rx="10"/><text x="890" y="272" text-anchor="middle" class="b">Expected</text><text x="890" y="298" text-anchor="middle" class="s">a stable base, because</text><text x="890" y="316" text-anchor="middle" class="s">losing balance costs the</text><text x="890" y="334" text-anchor="middle" class="s">next three targets, not</text><text x="890" y="352" text-anchor="middle" class="s">just this one</text><text x="890" y="378" text-anchor="middle" class="s">(a prediction, not a result)</text>
+</svg></div>
+
+<h2>3. Training in four stages</h2>
+<div class="fig"><svg viewBox="0 0 1000 250" role="img" aria-label="Four stages from multi-target pads to self-play">
+<rect class="g" x="10" y="30" width="225" height="190" rx="10"/><text x="24" y="58" class="b">1. Combo pads</text><text x="24" y="82" class="s">Your idea. 3 to 5 pads up at</text><text x="24" y="100" class="s">once around the robot, each</text><text x="24" y="118" class="s">worth different points. Hit them</text><text x="24" y="136" class="s">in any order with any limb.</text><text x="24" y="160" class="s">Some rounds fix the order,</text><text x="24" y="178" class="s">so it learns both.</text><text x="24" y="204" class="s">Teaches: stance, choice, flow</text>
+<path class="ln" d="M235 125H252" marker-end="url(#ar)"/>
+<rect class="g" x="260" y="30" width="225" height="190" rx="10"/><text x="274" y="58" class="b">2. Moving dummy</text><text x="274" y="82" class="s">The pads become the head,</text><text x="274" y="100" class="s">body and legs of a second</text><text x="274" y="118" class="s">robot that walks, circles and</text><text x="274" y="136" class="s">backs away but does not hit.</text><text x="274" y="204" class="s">Teaches: range, footwork</text>
+<path class="ln" d="M485 125H502" marker-end="url(#ar)"/>
+<rect class="g" x="510" y="30" width="225" height="190" rx="10"/><text x="524" y="58" class="b">3. It hits back</text><text x="524" y="82" class="s">The dummy starts punching</text><text x="524" y="100" class="s">and kicking. Being hit costs</text><text x="524" y="118" class="s">points by zone, same table.</text><text x="524" y="136" class="s">Referee breaks clinches.</text><text x="524" y="204" class="s">Teaches: defence, counters</text>
+<path class="ln" d="M735 125H752" marker-end="url(#ar)"/>
+<rect class="r" x="760" y="30" width="230" height="190" rx="10"/><text x="774" y="58" class="b">4. Against itself</text><text x="774" y="82" class="s">The opponent is an earlier</text><text x="774" y="100" class="s">copy of the same fighter,</text><text x="774" y="118" class="s">refreshed as it improves.</text><text x="774" y="136" class="s">This is where styles and</text><text x="774" y="154" class="s">league fighters come from.</text><text x="774" y="204" class="s">Teaches: tactics</text>
+</svg></div>
+<p class="cap">Each stage starts from the previous stage's network. The scorecard (head 3, body 2, legs 1, by force) is the same from stage 1 to stage 4, so the fighter never has to relearn what counts.</p>
+
+<h2>4. Other strategies considered</h2>
+<div class="tw"><table>
+<tr><th>Option</th><th>What it is</th><th>For</th><th>Against</th></tr>
+<tr><td><b>A. Patch the current one</b></td><td>Keep specialists, copy and rule; add kick as a fifth skill, smooth the switching, add a stance reward.</td><td>Least new code. Results in a day.</td><td>Keeps the root causes: one target, a rule that decides, no choice between punch and kick.</td></tr>
+<tr><td><b>B. One fight gym (recommended)</b></td><td>Sections 2 and 3.</td><td>Removes every cause in section 1. Your multi-target idea is built in. Reuses today's network as the starting point.</td><td>More to build. Stage 1 is unproven; if combo pads don't produce a stable stance I'd know within one evening.</td></tr>
+<tr><td><b>C. Coach on top</b></td><td>Keep the skills; add a second small network that picks skill and target a few times a second, trained on fight score.</td><td>Planning at a slower pace than reflexes, which is how people fight.</td><td>Two networks to train and debug. Still limited to the moves the specialists know. Better as a later add-on to B.</td></tr>
+<tr><td><b>D. Style from human boxing clips</b></td><td>Add a reward for moving like recorded human boxers (free university motion data only).</td><td>The most direct route to a stance that looks like boxing.</td><td>You moved us away from copying human motion earlier. Robots' proportions differ, so some of it won't transfer. Can be layered onto B later if the stance still looks wrong.</td></tr>
+</table></div>
+
+<h2>5. Faster feedback loop</h2>
+<p>Today one idea is tried at a time on one small GPU and takes about 3 hours before you can watch anything. Three changes:</p>
+<div class="grid">
+<div><b>Try 6 to 8 ideas at once.</b> The project allows 8 small GPUs, 16 mid-size and 16 large in this region; we have been using 2. Each feedback round launches several variants of the reward side by side instead of one after another.</div>
+<div><b>Screen in 25 minutes.</b> Every variant first runs a short trial and is scored on the same fixed test (points, falls, time in clinch, stance). Only the best two or three run to the end. Weak ideas die early.</div>
+<div><b>Clips arrive by themselves.</b> When a run ends it scores itself, records its fight clips, adds them to the clips page and shuts its machine down. You open one page and compare variants side by side.</div>
+</div>
+<p>I would also test a mid-size GPU against the small one on the same job before committing; I expect roughly twice the speed but have not measured it.</p>
+<div class="tw"><table>
+<tr><th></th><th>Today</th><th>Proposed</th></tr>
+<tr><td>Ideas tested per round</td><td class="n">1</td><td class="n">6 to 8</td></tr>
+<tr><td>First look at a result</td><td class="n">about 3 hours</td><td class="n">about 30 minutes</td></tr>
+<tr><td>Cost per feedback round</td><td class="n">about $3</td><td class="n">roughly $15 to $25</td></tr>
+</table></div>
+<p class="cap">Costs are my estimates from list prices and run lengths, not billing figures.</p>
+</main></body></html>
